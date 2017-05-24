@@ -66,5 +66,5 @@ const createDoc = (filePath, documentType) => {
 	});
 }
 
-createDoc('module_mock.js', '@module');
-createDoc('mqtt_mock.js', '@mqtt');
+createDoc('mock/module_mock.js', '@module');
+createDoc('mock/mqtt_mock.js', '@mqtt');
