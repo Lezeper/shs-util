@@ -1,8 +1,8 @@
 /**
- * @api {post} /Product/resultIndex
- * 
- * @apiVersion 1.0.0
  * @apiName resultIndex
+ * @apiMethod post
+ * @apiUrl /Product/resultIndex
+ * @apiVersion 1.0.0
  * @apiGroup Product
  * 
  * @apiDescription  Retrieves a list of sorted search result index
