@@ -52,12 +52,14 @@ const multiDoc = (processComment, patternGroup) => {
 	// combine pattern will have error here...
 	let docList = [];
 	processComment.forEach((comment) => {
+		let tempList = [];
 		for (let prop in patternGroup) {
 			let val = comment.match(patternGroup[prop])[1];
 			if (_.isNil(val))
 				return console.error('Undeclared document Property: [' + prop + '] on file: ' + filePath);
-			docList.push({prop: prop, val: val});
+			tempList.push({prop: prop, val: val});
 		}
+		docList.push(tempList);
 	});
 	console.log(docList);
 }
