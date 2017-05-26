@@ -1,124 +1,121 @@
 'use strict';
 /**
  * Usage:
- * One file must have only one document type
  * '@moduleUsage' must be the last annotation on the comment
  * must have blank line between multi-line Property
- * 
- * TODO:
- * 
+ * start a new line if you want to it be code style
  */
 const fs = require('fs');
+const jsonfile = require('jsonfile');
 const _ = require('lodash');
 const glob = require('glob');
 const config = require('./config');
+const jsonDataFileName = 'data.json';
 const charEncording = 'utf-8';
 const jsCommentPatern = /\/\*\*([\s\S]*?)\*\//g;
-const modulePatternGroup = {
-	moduleName: /@moduleName\s+(\w.*)/,
-	moduleVersion: /@moduleVersion\s+(\w.*)/,
-	moduleGroup: /@moduleGroup\s+(\w.*)/,
-	moduleDescription: /@moduleDescription\s+((.|[\r\n])*?(?=\s\*\s[\r\n\s]))/,
-	moduleDependency: /@moduleDependency\s+((.|[\r\n])*?(?=\s\*\s[\r\n\s]))/,
-	moduleUsage: /@moduleUsage\s+((.|[\n\r])*?(?=\s\*\/))/,
-};
-const mqttPatternGroup = {
-	mqttClientId: /@mqttClientId\s+(\w.*)/,
-	mqttClientVersion: /@mqttClientVersion\s+(\w.*)/,
-	mqttBrokerUrl: /@mqttBrokerUrl\s+([\/\w].*)/,
-	mqttDescription: /@mqttDescription\s+((.|[\r\n])*?(?=\s\*\s[\r\n\s]))/,	
-	mqttSubscribe: /@mqttSubscribe\s+((.|[\r\n])*?(?=\s\*\s[\r\n\s]))/,
-	mqttPublish: /@mqttPublish\s+((.|[\r\n])*?(?=\s\*\s[\r\n\s]))/,
-};
-const apiPatternGroup = {
-	apiName: /@apiName\s+(\w.*)/,
-	apiMethod: /@apiMethod\s+(\w.*)/,
-	apiUrl: /@apiUrl\s+([\/\w].*)/,
-	apiVersion: /@apiVersion\s+(\w.*)/,
-	apiGroup: /@apiGroup\s+(\w.*)/,
-	apiDescription: /@apiDescription\s+((.|[\r\n])*?(?=\s\*\s[\r\n\s]))/,
-	apiParam: /@apiParam\s+((.|[\r\n])*?(?=\s\*\s[\r\n\s]))/,
-	apiParamExample: /@apiParamExample\s+((.|[\r\n])*?(?=\s\*?\s\@|\/))/,
-	apiSuccess: /@apiSuccess\s+((.|[\r\n])*?(?=\s\*\s[\r\n\s]))/,
-	apiSuccessExample: /@apiSuccessExample\s+((.|[\r\n])*?(?=\s\*?\s\@|\/))/,
-};
-const documentTypes = [
-	{ isSingleDoc: true, type: '@module', patternGroup: modulePatternGroup },
-	{ isSingleDoc: true, type: '@mqtt', patternGroup: mqttPatternGroup },
-	{ isSingleDoc: false, type: '@api', patternGroup: apiPatternGroup },
-];
+const documentTypes = require('./types');
 
-const multiDoc = (processComment, patternGroup) => {
-	// combine pattern will have error here...
-	let docList = [];
-	processComment.forEach((comment) => {
-		let tempList = [];
-		for (let prop in patternGroup) {
-			let val = comment.match(patternGroup[prop])[1];
-			if (_.isNil(val))
-				return console.error('Undeclared document Property: [' + prop + '] on file: ' + filePath);
-			tempList.push({prop: prop, val: val});
-		}
-		docList.push(tempList);
-	});
-	console.log(docList);
+const writeToJsonFile = (data) => {
+	jsonfile.writeFileSync(__dirname + '/' + jsonDataFileName, data);
 }
 
-const singleDoc = (processComment, patternGroup) => {
-	// combine pattern will have error here...
-	let docList = [];
-	for (let prop in patternGroup) {
-		let val = processComment[0].match(patternGroup[prop])[1];
+const cleanValue = (val) => {
+	return val.replace(/\s\*\s|\*\s|\s\*/g, '');
+}
+
+var docList = [];
+
+const setDocJsonData = (processComment, properties, type, filePath) => {
+	let tempList = [];
+	for (let prop in properties) {
+		let val = processComment.match(properties[prop].pattern)[1];
 		if (_.isNil(val))
 			return console.error('Undeclared document Property: [' + prop + '] on file: ' + filePath);
-		docList.push({prop: prop, val: val});
+		
+		if(_.isNil(properties[prop].options))
+			tempList.push({ key: prop, val: cleanValue(val)});
+		else
+			tempList.push({ key: prop, val: cleanValue(val), options: properties[prop].options });
 	}
-	console.log(docList);
+	
+	return {
+		type: type,
+		data: tempList
+	};
+}
+
+const multiDoc = (processComment, properties, type, filePath) => {
+	if(processComment.length <= 1)
+		return consle.error('multi doc should have at least two document comments.');
+
+	let result = [];
+	processComment.forEach((comment) => {
+		result = _.concat(result, setDocJsonData(comment, properties, type, filePath));
+	});
+	return result;
+}
+
+const singleDoc = (processComment, properties, type, filePath) => {
+	if(processComment.length != 1)
+		return consle.error('single doc can only have one document comment.');
+	return setDocJsonData(processComment[0], properties, type, filePath);
 }
 
 const createDoc = (filePath) => {
-	fs.readFile(filePath, charEncording, (err, data) => {
-		if (err) throw err;
+	var data = fs.readFileSync(filePath, { encoding : charEncording });
 
-		// extrac all comments(/** ... */) from file
-		let commentsInFile = data.match(jsCommentPatern);
-		// the comment need to apply regular expression
-		let processComment = [];
-		let patternGroup = null;
+	// extrac all comments(/** ... */) from file
+	let commentsInFile = data.match(jsCommentPatern);
+	// the comment need to apply regular expression
+	let processComment = [];
+	let properties = null;
+	let type = null;
 
-		for (let i = 0; i < commentsInFile.length; i++) {
-			for(let j = 0; j < documentTypes.length; j++) {
-				if (commentsInFile[i].indexOf(documentTypes[j].type) > -1) {
-					processComment.push(commentsInFile[i]);
-					patternGroup = documentTypes[j].patternGroup;
-					if(documentTypes[j].isSingleDoc)
-						break;
-				}
+	for (let i = 0; i < commentsInFile.length; i++) {
+		for(let j = 0; j < documentTypes.length; j++) {
+			if (commentsInFile[i].indexOf(documentTypes[j].group) > -1) {
+				processComment.push(commentsInFile[i]);
+				properties = documentTypes[j].properties;
+				type = documentTypes[j].type;
+				if(documentTypes[j].isSingleDoc)
+					break;
 			}
 		}
-
-		if(processComment.length == 0)
-			return console.error('No document tag found...');
-		else if(processComment.length == 1 && patternGroup != null)
-			return singleDoc(processComment, patternGroup);
-		else if(processComment.length > 1)
-			return multiDoc(processComment, patternGroup);
-	});
+	}
+	
+	if(processComment.length == 0)
+		return console.error('No document tag found...');
+	else if(processComment.length == 1 && properties != null)
+		return singleDoc(processComment, properties, type, filePath);
+	else if(processComment.length > 1) {
+		return multiDoc(processComment, properties, type, filePath);
+	}
 }
 
 config.filePath.forEach((fp) => {
-	glob(fp, {}, function (er, files) {
-		files.forEach((file) => {
-			var temp = file.split('/');
-			var flag = true;
-			for(let i = 0; i < config.exclusiveFilesName.length; i++) {
-				if(config.exclusiveFilesName[i] == temp[temp.length-1]) {
-					flag = false;
-					break;
+	var files = glob.sync(fp);
+	files.forEach((file) => {
+		var temp = file.split('/');
+		var flag = true;
+		for(let i = 0; i < config.exclusiveFilesName.length; i++) {
+			if(config.exclusiveFilesName[i] == temp[temp.length-1]) {
+				flag = false;
+				break;
+			}
+		}
+		if(flag) {
+			// doc should be single object, or it will need to do some process
+			var doc = createDoc(file);
+			
+			if(!_.isNil(doc)) {
+				if(_.isArray(doc)) {
+					docList = _.concat(docList, doc);
+				} else {
+					docList.push(doc);
 				}
 			}
-			if(flag)
-				createDoc(file);
-		});
+		}
 	});
 });
+
+writeToJsonFile(docList);

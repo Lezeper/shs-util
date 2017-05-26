@@ -6,7 +6,7 @@
  * @otherTag
  */
 /**
- * @mqttClientId    clientId only one line.
+ * @mqttName    clientId
  * 
  * @mqttClientVersion   1.0.0 only one line.
  * 

@@ -6,7 +6,7 @@
  * @otherTag
  */
 /**
- * @moduleName Module Test (It should have only one line)
+ * @moduleName Module Test
  * 
  * @moduleVersion 1.0.0 (It should have only one line)
  * @moduleGroup Utility (It should have only one line)

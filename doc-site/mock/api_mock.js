@@ -32,7 +32,8 @@ function assembleTokens(req, res, customTokens) {
  *      "searchCriteria": { "code": "98", "description": "This is description" }
  * }
  * 
- * @apiSuccess { Object } searchResult List of sorted search result index1
+ * @apiSuccess 
+ * { Object } searchResult List of sorted search result index1
  * 
  * @apiSuccessExample
  * [
@@ -78,7 +79,8 @@ function assembleTokens(req, res, customTokens) {
  *      "searchCriteria": { "code": "98", "description": "This is description" }
  * }
  * 
- * @apiSuccess { Object } searchResult List of sorted search result index
+ * @apiSuccess 
+ * { Object } searchResult List of sorted search result index
  * 
  * @apiSuccessExample 
  * [

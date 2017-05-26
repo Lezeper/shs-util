@@ -1,0 +1,14 @@
+pre, code {
+    background-color: #292b36 !important;
+    color: #e2e0e0 !important;
+}
+
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+.title-badget {
+    margin: 30px 0 20px 0;
+    padding: 15px;
+    background-color: #eee;
+}
