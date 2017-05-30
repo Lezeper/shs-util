@@ -12,3 +12,16 @@ pre, code {
     padding: 15px;
     background-color: #eee;
 }
+
+.doc-warning {
+    border-left-color: #f0ad4e !important;
+    padding: 1.25rem;
+    margin-top: 1.25rem;
+    border: 1px solid #eee;
+    border-left-width: .25rem;
+    border-radius: .25rem;
+}
+
+.doc-warning h4 {
+    color: #f0ad4e;
+}

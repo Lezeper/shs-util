@@ -1,4 +1,4 @@
-const app = angular.module('app', ['ngSanitize', 'hljs']);
+const app = angular.module('app', ['ngSanitize', 'hljs', 'mgcrea.ngStrap']);
 
 {
 	app.directive('bindHtmlCompile', ['$compile', function ($compile) {
@@ -32,6 +32,8 @@ const app = angular.module('app', ['ngSanitize', 'hljs']);
 						} else {
 							if(prop.options.isCode) {
 								result += ("<div><strong>" + prop.key + ': ' + "</strong><div hljs>" + prop.val + '</div></div>');
+							} else if(prop.options.isWarning && !_.isEmpty(prop.val)) {
+								result += ("<div class='doc-warning'><h4>Warning</h4>" + prop.val +"</div>");
 							}
 						}
 					}
