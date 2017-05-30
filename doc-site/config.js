@@ -1,5 +1,5 @@
 module.exports = {
-    filePath: [
+    scanPath: [
         '*/mock/*.js',
         'doc-site/*.js'
     ],

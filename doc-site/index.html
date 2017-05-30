@@ -13,13 +13,13 @@
     <!-- MetisMenu CSS -->
     <link href="./vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
     <!-- Theme CSS -->
-    <link href="./sb-admin-2.min.css" rel="stylesheet">
+    <link href="./vendor/customize/sb-admin-2.min.css" rel="stylesheet">
     <!-- Fonts -->
     <link href="./vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <!-- AngularStrap -->
     <link rel="stylesheet" href="./vendor/angular/css/angular-motion.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./vendor/customize/style.css">
 
     <!-- jQuery -->
     <script src="./vendor/jquery/jquery.min.js"></script>
@@ -80,11 +80,6 @@
                         <h2 class="page-header text-uppercase" ng-bind="doc.type"></h2>
                         <div id="{{doc.type}}-{{$index}}" ng-repeat="data in doc.dataList track by $index">
                             <div style="white-space: pre;" bind-html-compile="data | docObjConverter"></div>
-                            
-                            <!--<div class="doc-warning">
-                                <h4>Test</h4>
-                                <p>Contents goes here...</p>
-                            </div>-->
                         </div>
                     </div>
                 </div>

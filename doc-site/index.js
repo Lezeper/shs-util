@@ -4,7 +4,8 @@
  * @moduleVersion 1.0.0
  * @moduleGroup Util
  * @moduleDescription
- * Dynamically generate document web site and template files. 
+ * Dynamically generate document web site and template files.
+ * Have default types: API, MQTT and Module.
  * 
  * @moduleUsage
  * Generate template file: node doc-site g module myDir/test.js
@@ -108,9 +109,8 @@ const createDoc = (filePath) => {
 
 const generate = (type, fileRelativePath) => {
 	if(type === 'web') {
-		config.filePath.forEach((fp) => {
+		config.scanPath.forEach((fp) => {
 			var files = glob.sync(fp);
-			console.log(files)
 			files.forEach((file) => {
 				var temp = file.split('/');
 				var flag = true;
