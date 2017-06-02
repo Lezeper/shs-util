@@ -1,9 +1,10 @@
 module.exports = {
     scanPath: [
-        '*/mock/*.js',
-        'doc-site/*.js'
+        '**/mock/*.js',
+        // 'doc-site/*.js'
     ],
     exclusiveFilesName: [
-        'function_mock.js',
+        // 'api_mock.js',
+        // 'mqtt_mock.js',
     ],
 }

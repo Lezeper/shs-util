@@ -1,10 +1,4 @@
 'use strict';
-/** eslint eqeqeq:0
- * 
- */
-/**
- * @otherTag
- */
 /**
  * @moduleName Module Test
  * 
@@ -33,6 +27,49 @@ function assembleTokens(req, res, customTokens) {
           a.splice(j--, 1);
         }
       }
+    }
+	/* eslint eqeqeq:0 */
+    return a;
+  };
+}
+/**
+ * @moduleApiName assembleTokens
+ * @moduleApiReturns array object
+ * 
+ * @moduleApiParam
+ * { "param": "req", "type": "Object", "description": "the request from client" }
+ * @moduleApiParam
+ * { "param": "res", "type": "Object", "description": "the response back to client" }
+ * 
+ * @moduleApiExample
+ * let a = assembleTokens(req, res);
+ * console.log(a);
+ */
+function assembleTokens(req, res, customTokens) {
+  const arrayUniqueTokens = (array) => {
+    const a = array.concat();
+    for (let i = 0; i < a.length; ++i) {
+      // not === because token can be regexp object
+    }
+	/* eslint eqeqeq:0 */
+    return a;
+  };
+}
+
+/**
+ * @moduleApiName assembleTokens2
+ * @moduleApiReturns array object2
+ * @moduleApiParam
+ * { "param": "req", "type": "Object2", "description": "the request from client" }
+ * 
+ * @moduleApiExample
+ * let a = assembleTokens(req2, res);
+ */
+function assembleTokens2(req, res, customTokens) {
+  const arrayUniqueTokens = (array) => {
+    const a = array.concat();
+    for (let i = 0; i < a.length; ++i) {
+      // not === because token can be regexp object
     }
 	/* eslint eqeqeq:0 */
     return a;
