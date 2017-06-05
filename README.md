@@ -8,8 +8,10 @@ All the developer need to do is wrote document comment on the file. It will auto
 out those comment and make up a documentation web site.
 #### Usage Example
 node doc-site g web    - generate documentation website
+
 node doc-site g module  -  create a template module file
 #### Comment format Example
+```
 /**
  * @moduleName Module Test
  * 
@@ -42,5 +44,5 @@ node doc-site g module  -  create a template module file
  * console.log(a);
  */
  function code goes here... (second level comment)
-
+```
 ### To be continue...
