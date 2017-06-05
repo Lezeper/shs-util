@@ -21,6 +21,7 @@
 const fs = require('fs');
 const jsonfile = require('jsonfile');
 const _ = require('lodash');
+const endOfLine = require('os').EOL;
 const glob = require('glob');
 const config = require('./config');
 const jsonDataFileName = 'data.json';
@@ -32,6 +33,15 @@ const JSON_ = DocumentTypes.JSON;
 
 const writeToJsonFile = (data) => {
 	jsonfile.writeFileSync(__dirname + '/' + jsonDataFileName, data);
+}
+
+const errorHandler = (content) => {
+	console.error(content);
+	process.exit();
+}
+
+const warningHandler = (content) => {
+	console.log('WARNING: ' + content);
 }
 
 const cleanValue = (val, propertyName) => {
@@ -55,7 +65,7 @@ const setDocJsonData = (processComment, properties, type, filePath) => {
 		let temp = processComment.match(properties[prop].pattern);
 		temp = _.isNil(temp) ? null : temp[1];
 		if (_.isNil(temp) && properties[prop].required)
-			return console.error('Undeclared document Property: [' + properties[prop].propertyName + '] on file: ' + filePath);
+			errorHandler('Undeclared document Property: [' + properties[prop].propertyName + '] on file: ' + filePath);
 
 		if(!_.isNil(temp)) {
 				let cleanVal = cleanValue(temp, properties[prop].propertyName);
@@ -63,14 +73,16 @@ const setDocJsonData = (processComment, properties, type, filePath) => {
 				if(properties[prop].isMulti) {
 					if(properties[prop].type === JSON_) {
 						if(cleanVal.isMultiFound) {
-							let cleanValSplit = cleanVal.val.split("\n");
+							let cleanValSplit = cleanVal.val.split(endOfLine).filter((n)=>{ return !_.isEmpty(n) && _.isString(n) && !n.match(/^\s+$/)});
 							let valueList = [];
-							cleanValSplit.forEach((t)=>{
+							for(let i = 0; i < cleanValSplit.length; i++) {
 								try {
-									let validJSON = JSON.parse(t);
+									let validJSON = JSON.parse(cleanValSplit[i]);
 									valueList.push(validJSON)
-								} catch(e){}
-							});
+								} catch(e){
+									errorHandler('invalid JSON found at file: ' + filePath + ', -> ' + cleanValSplit[i]);
+								}
+							}
 							tempList.push({ key: prop, val: valueList, type: properties[prop].type, options: properties[prop].options });
 						} else {
 							tempList.push({ key: prop, val: cleanVal.val, type: properties[prop].type, options: properties[prop].options });
@@ -95,7 +107,7 @@ const setDocJsonData = (processComment, properties, type, filePath) => {
 
 const multiCommentWithSub = (processComments, properties, type, filePath, subDocProperties, subGroup) => {
 	if(processComments.length <= 1 || _.isNil(subDocProperties) || _.isNil(subGroup))
-		return console.error('Invalid params for multiCommentWithSub.');
+		return errorHandler('Invalid params for multiCommentWithSub.');
 	
 	let result = { type: type, hasSub: true, data: { main: null, sub: [] } };
 	processComments.forEach((comment) => {
@@ -103,7 +115,7 @@ const multiCommentWithSub = (processComments, properties, type, filePath, subDoc
 			result.data.sub = _.concat(result.data.sub, setDocJsonData(comment, subDocProperties, null, filePath));
 		} else {
 			if(result.data.main != null)
-				return console.error('mutiple main comment found on file: ' + filePath);
+				return errorHandler('mutiple main comment found on file: ' + filePath);
 			result.data.main = setDocJsonData(comment, properties, null, filePath);
 		}
 	});
@@ -156,7 +168,7 @@ const createDoc = (filePath) => {
 	}
 
 	if(processComments.length == 0)
-		return console.error('No document tag found on file '+filePath+'...');
+		return warningHandler('No document tag found on file '+filePath+'...');
 	else if(processComments.length == 1 && properties != null)
 		return singleComment(processComments, properties, type, filePath);
 	else if(processComments.length > 1) {
@@ -204,12 +216,11 @@ const generate = (type, fileRelativePath) => {
 			}
 		}
 		// the template file is not found
-		console.error('template file not found...');
+		errorHandler('template file not found...');
 	}
 }
 
 if(process.argv.length == 4 || process.argv.length == 5) {
-	// console.log(process.cwd())
 	var operation = null;
 	var type = null;
 	var fileRelativePath = null; // e.g test.js or myDir/test.js
@@ -228,9 +239,9 @@ if(process.argv.length == 4 || process.argv.length == 5) {
 			if(fileRelativePath !=null)
 				generate(type, fileRelativePath);
 			else
-				console.error('fileRelativePath is not given for generate file type: '+type+'...');
+				errorHandler('fileRelativePath is not given for generate file type: '+type+'...');
 		}
 	}
 } else {
-	console.error('Invalid argument...');
+	errorHandler('Invalid argument...');
 }

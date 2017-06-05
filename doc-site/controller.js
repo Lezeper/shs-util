@@ -34,7 +34,12 @@ const app = angular.module('app', ['ngSanitize', 'hljs', 'mgcrea.ngStrap']);
 				value.forEach(function(val, index) {
 					let tableRow = '';
 					tableHeadProperties.forEach((thp) => {
-						tableRow += ('<td>' + val[thp] + '</td>');
+						if(_.isNil(val[thp])) {
+							tableRow += ('<td>/</td>');
+						} else {
+							tableRow += ('<td>' + val[thp] + '</td>');
+						}
+						
 						if(index == 0) {
 							tableHead += ('<th>' + thp + '</th>');
 						}
@@ -45,10 +50,12 @@ const app = angular.module('app', ['ngSanitize', 'hljs', 'mgcrea.ngStrap']);
 				let obj = JSON.parse(value);
 				for(let propName in obj) {
 					tableHead += ('<th>' + propName + '</th>');
+					if(_.isNil(obj[propName]))
+						return tableBody += ('<td>/</td>');
 					tableBody += ('<td>' + obj[propName] + '</td>');
 				}
 			}
-			return '<table class=\"table\"><thead>' + tableHead + '</thead>'+ '<tbody>' + tableBody + '</tbody>' + '</table>'
+			return '<table class=\"table table-bordered\"><thead>' + tableHead + '</thead>'+ '<tbody>' + tableBody + '</tbody>' + '</table>'
 		}
 	}
 

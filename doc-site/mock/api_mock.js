@@ -22,10 +22,11 @@ function assembleTokens(req, res, customTokens) {
  * @apiDescription  Retrieves a list of sorted search result index1
  * 
  * @apiParam 
- * {Object}   searchCriteria1
- * - {String} code
- * - {String} description
- * {String} searchType1			(required) "A", "B", "C" (case insensitive)
+ * { "param": "searchCriteria1", "type": "Object", "description": "ABC" }
+ * @apiParam 
+ * { "param": "- code", "type": "String", "description": "this is code" }
+ * @apiParam 
+ * { "param": "- description", "type": "String", "isRequired": "true", "description": "this is description" }
  * 
  * @apiParamExample
  * {
@@ -69,10 +70,11 @@ function assembleTokens(req, res, customTokens) {
  * @apiDescription  Retrieves a list of sorted search result index
  * 
  * @apiParam 
- * {Object}   searchCriteria
- * - {String} code
- * - {String} description
- * {String} searchType	(required) "A", "B", "C" (case insensitive)
+ * { "param": "searchCriteria1", "type": "Object", "description": "ABC" }
+ * @apiParam 
+ * { "param": "- code", "type": "String", "description": "this is code" }
+ * @apiParam 
+ * { "param": "- description", "type": "String", "description": "this is description" }
  * 
  * @apiParamExample
  * {

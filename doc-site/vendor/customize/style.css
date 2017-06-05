@@ -25,3 +25,7 @@ pre, code {
 .doc-warning h4 {
     color: #f0ad4e;
 }
+
+table {
+    margin-top: 10px;
+}

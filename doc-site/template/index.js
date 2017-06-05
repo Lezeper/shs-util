@@ -24,7 +24,7 @@ TYPES.push(
                 isMulti: false,
                 required: true
             },
-            Param: {
+            Parameters: {
                 propertyName: '@moduleApiParam',
                 pattern: /@moduleApiParam\s+((.|[\r\n])*?\**(?=\s\*\s\s))/,
                 type: JSON,
@@ -202,13 +202,12 @@ TYPES.push(
                 isMulti: false,
                 required: false
             },
-            Param: {
+            Parameters: {
                 propertyName: '@apiParam',
                 pattern: /@apiParam\s+((.|[\r\n])*?(?=\s\*\s[\r\n\s]))/,
-                type: STRING,
-                isMulti: false,
+                type: JSON,
+                isMulti: true,
                 required: false,
-                options: { isCode: true }
             },
             ParamExample: {
                 propertyName: '@apiParamExample',
